@@ -7,51 +7,51 @@ import 'package:untitled/countdown.dart';
 import 'package:untitled/monitoring/monitoring_service.dart';
 import 'package:untitled/monitoring/utils/flutter_background_service_utils.dart';
 
-onStart() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  DartPluginRegistrant.ensureInitialized();
+// onStart() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   DartPluginRegistrant.ensureInitialized();
 
-  await startMonitoringService();
-}
+//   await startMonitoringService();
+// }
 
-@pragma("vm:entry-point")
-void overlayMain() async {
-  debugPrint("Starting Alerting Window Isolate!");
-  WidgetsFlutterBinding.ensureInitialized();
+// @pragma("vm:entry-point")
+// void overlayMain() async {
+//   debugPrint("Starting Alerting Window Isolate!");
+//   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OverlayWidget()));
-}
+//   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: OverlayWidget()));
+// }
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  initializeService();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // initializeService();
   runApp(
     MyApp(),
   );
 }
 //-----------------------------------------
 
-void initializeService() async {
-  FlutterBackgroundService().configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onMonitoringServiceStart,
-      autoStart: true,
-      isForegroundMode: true,
-    ),
-    iosConfiguration: IosConfiguration(
-      autoStart: true,
-      onForeground: onMonitoringServiceStart,
-      // onBackground: () => onMonitoringServiceStart,
-    ),
-  );
-  FlutterBackgroundService().startService();
-}
+// void initializeService() async {
+//   FlutterBackgroundService().configure(
+//     androidConfiguration: AndroidConfiguration(
+//       onStart: onMonitoringServiceStart,
+//       autoStart: true,
+//       isForegroundMode: true,
+//     ),
+//     iosConfiguration: IosConfiguration(
+//       autoStart: true,
+//       onForeground: onMonitoringServiceStart,
+//       // onBackground: () => onMonitoringServiceStart,
+//     ),
+//   );
+//   FlutterBackgroundService().startService();
+// }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: AlertDialogService2.navigatorKey,
+      // navigatorKey: AlertDialogService2.navigatorKey,
       home: CountdownPage(),
     );
   }
