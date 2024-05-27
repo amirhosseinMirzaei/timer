@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled/local_notifictions.dart';
 
 class CountdownPage extends StatefulWidget {
   @override
@@ -12,7 +13,7 @@ class _CountdownPageState extends State<CountdownPage>
     with WidgetsBindingObserver {
   late MethodChannel _channel;
 
-  int countdownSeconds = 4000;
+  int countdownSeconds = 3000;
   late Timer countdownTimer;
   late OverlayEntry _overlayEntry;
   bool countdownActive = false;
@@ -20,11 +21,21 @@ class _CountdownPageState extends State<CountdownPage>
 
   @override
   void initState() {
+    listenToNotifications();
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _channel = MethodChannel('background_service');
     initial();
     // startCountdown();
+  }
+
+  //listen any notification clicked or not
+  listenToNotifications() {
+    print('listen to notification');
+    LocalNotification.onClickedNotifiction.stream.listen((event) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => CountdownPage()));
+    });
   }
 
   @override
@@ -56,22 +67,24 @@ class _CountdownPageState extends State<CountdownPage>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      _stopBackgroundService();
-      // removeOverlay();
-      final prefs = await SharedPreferences.getInstance();
-      final endingTime = prefs.getString('end_time');
-
-      if (endingTime != null) {
-        final endTime = DateTime.parse(endingTime);
-        Duration _remaining = endTime.difference(DateTime.now());
-
+      if (countdownSeconds > 0) {
+        _stopBackgroundService();
+        // removeOverlay();
         final prefs = await SharedPreferences.getInstance();
-        prefs.setInt('countdownSeconds', _remaining.inSeconds);
+        final endingTime = prefs.getString('end_time');
 
-        final remain = prefs.getInt('countdownSeconds');
-        setState(() {
-          countdownSeconds = remain!;
-        });
+        if (endingTime != null) {
+          final endTime = DateTime.parse(endingTime);
+          Duration _remaining = endTime.difference(DateTime.now());
+
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setInt('countdownSeconds', _remaining.inSeconds);
+
+          final remain = prefs.getInt('countdownSeconds');
+          setState(() {
+            countdownSeconds = remain!;
+          });
+        }
       }
     } else if (state == AppLifecycleState.paused) {
       _startBackgroundService();
@@ -142,6 +155,10 @@ class _CountdownPageState extends State<CountdownPage>
           countdownSeconds--;
           onWillPop = true;
         } else {
+          LocalNotification.showSimpleNotification(
+              title: 'Notruphil',
+              body: 'this is a notification',
+              payload: 'timer is down');
           countdownActive = false;
           clearSharedPreferences();
           _overlayEntry.remove();
